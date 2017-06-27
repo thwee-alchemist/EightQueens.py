@@ -10,3 +10,5 @@ This program is my attempt to search for all solutions to the eight queens probl
 THe program uses the itertools library for generating solutions, and some unreviewed math for checking the movement of the queen pieces. 
 
 I hope it should theoretically work on a really fast computer, please feel free to contact me with suggestions. 
+
+I know the search space for this program is astronomical, but who knows, maybe if I leave the computer running long enough. Maybe there's a better way of finding all solutions to the eight queens problem. Please let me know if you know one. 
