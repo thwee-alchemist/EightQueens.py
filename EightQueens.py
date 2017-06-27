@@ -1,6 +1,6 @@
 # EightQueens.py
 # Joshua Marshall Moore
-# thwee.abacadabra.alchemist@gmail.compile
+# thwee.abacadabra.alchemist@gmail.com
 # June 24th, 2017
 
 from itertools import combinations
