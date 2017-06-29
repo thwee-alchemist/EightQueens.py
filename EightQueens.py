@@ -114,7 +114,7 @@ def check(positions):
 		
 		# up right diagonal:
 		# Above the diagonal takes on a different meaning here, seeing how I'm
-		# dealing with the other diagonal. It is defined by pos58>pos%7. Now I'm
+		# dealing with the other diagonal. It is defined by pos%8>pos%7. Now I'm
 		# using a while loop to construct the boundary. 
 		threatened |= set(range(pos, up_right_boundary(pos), -7)[1:]) # up right
 		
