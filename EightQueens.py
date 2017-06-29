@@ -28,6 +28,49 @@
 from itertools import combinations
 import pdb
 
+# works
+def down_right_boundary(pos):
+	boundary = (8-pos%8)*8
+	applies = (pos%8)+1 > int(pos/8)
+	if applies:
+		return boundary
+	else:
+		return 64
+
+# works
+def up_left_boundary(pos):
+	boundary = ((int(pos/8)-(pos%8))*8)-1
+	applies = (pos%8) <= int(pos/8)
+	if applies:
+		return boundary
+	else:
+		return -1
+
+# thanks, https://stackoverflow.com/questions/44813360/finding-a-diagonal-boundary-in-a-one-dimensional-array
+def up_right_boundary(pos):
+	boundary = pos
+	while ((boundary+1)%8) != 0:
+		boundary -= 7
+		
+	if boundary < 6:
+		boundary = 6
+		
+	boundary -= 1
+		
+	applies = pos%8>=pos%7
+	
+	if applies:
+		return boundary
+	else:
+		return -1
+		
+def down_left_boundary(pos):
+	boundary = pos
+	while (boundary%8) != 0 and boundary+7<64:
+		boundary += 7
+	boundary += 1
+	return boundary
+
 def check(positions):
 
 	fields = set(range(64))
@@ -41,9 +84,9 @@ def check(positions):
 		set([p for p in range(36, 64) if (p%8)>3])
 	]
 	
-	#for q in quadrants:
-	#	if len(positions.intersection(q)) != 2:
-	#		return False
+	for q in quadrants:
+		if len(positions.intersection(q)) != 2:
+			return False
 			
 	# check the queen's ranges
 	for pos in positions:
@@ -61,26 +104,24 @@ def check(positions):
 		# range to 64-(pos%8) to prevent warping the board into a field that 
 		# connects diagonals like Risk. 
 		# Otherwise, 64 suffices as the ending condition. 
-		threatened |= set(range(pos, 64-(pos%8) if ((pos%8)<=int(pos/8)) else 64, 9)[1:]) # down right
+		threatened |= set(range(pos, down_right_boundary(pos), 9)[1:]) # down right
 		
 		# up left diagonal:
 		# Similarly, if the position is above the diagonal, -1 will suffice as 
 		# the range's ending condition. Things are more complicated if the
 		# position is below the diagonal, as I must prevent warping, again. 
-		threatened |= set(range(pos, ((int(pos/8)-(pos%8))*8)-1 if ((pos%8)<=int(pos/8)) else -1, -9)[1:]) # up left
+		threatened |= set(range(pos, up_left_boundary(pos), -9)[1:]) # up left
 		
 		# up right diagonal:
 		# Above the diagonal takes on a different meaning here, seeing how I'm
-		# dealing with the other diagonal. It is defined by pos. Now I
-		# restrict the range to a (pos%8)*8, creating a boundary along the right
-		# side of the board. 
-		threatened |= set(range(pos, (pos%8)*8 if (pos%8)>=(pos%7) else -1, -7)[1:]) # up right
+		# dealing with the other diagonal. It is defined by pos58>pos%7. Now I'm
+		# using a while loop to construct the boundary. 
+		threatened |= set(range(pos, up_right_boundary(pos), -7)[1:]) # up right
 		
 		# down left diagonal:
-		# I reuse the same definition of the diagonal as above.
-		threatened |= set(range(pos, ((pos%8)+1)*8 if (pos%8)>=(pos%7) else 64, 7)[1:]) # down left
-	
-	pdb.set_trace()
+		# This code also uses a while loop to construct the boundary; a little 
+		# bit inefficient. 
+		threatened |= set(range(pos, down_left_boundary(pos), 7)[1:]) # down left
 	
 	if len(positions.intersection(threatened)) > 0:
 		return False
@@ -90,26 +131,14 @@ def check(positions):
 		
 if __name__ == '__main__':
 
-	# print(check(set([55]))) # pass
-	# print(check(set([62]))) # pass
-	# print(check(set([63]))) # pass
-	# print(check(set([48]))) # pass
-	# print(check(set([57]))) # pass
-	# print(check(set([56]))) # pass
-	# print(check(set([8])))  # pass
-	
-	print(check(set([1])))  # fail
-	print(check(set([0])))
-	print(check(set([6])))
-	print(check(set([15])))
-	print(check(set([7])))
-
-
+	# sanity check
+	solution = [6, 9, 21, 26, 32, 43, 55, 60]
 	print(
-		check(set([6, 9, 21, 26, 32, 43, 55, 60]))
+		check(set(solution)),
+		solution
 	)
 
-	# for potential_solution in combinations(range(64), 8):
-		# is_solution = check(set(potential_solution))
-		# if is_solution:
-			# print(is_solution, potential_solution)
+	for potential_solution in combinations(range(64), 8):
+		is_solution = check(set(potential_solution))
+		if is_solution:
+			print(is_solution, potential_solution)
